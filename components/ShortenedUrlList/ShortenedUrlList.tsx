@@ -3,11 +3,11 @@ import {
   VStack,
   Heading,
   Text,
-  FlatList,
   Box,
   HStack,
   Spacer,
-  Link
+  Link,
+  View
 } from "native-base";
 import * as Clipboard from 'expo-clipboard';
 import { GestureResponderEvent } from "react-native";
@@ -33,22 +33,25 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
         Shortened URLs
       </Heading>
 
-      <FlatList mb="10" data={props.items} renderItem={({ item }) =>
-        <Box pl={["0", "4"]} pr={["0", "5"]} py="2">
-          <HStack space={[2, 3]} justifyContent="space-between">
-            <VStack>
-              <Text color="coolGray.600">
-                <Link href={item.shortUrl}>{item.shortUrl}</Link>
-              </Text>
+      <View mb="10">
+        {props.items.map((item, index) => (
+          <Box pl={["0", "4"]} pr={["0", "5"]} py="2" key={item.code}>
+            <HStack space={[2, 3]} justifyContent="space-between">
+              <VStack>
+                <Text color="coolGray.600">
+                  <Link href={item.shortUrl}>{item.shortUrl}</Link>
+                </Text>
+                <Spacer />
+                <Text fontSize="xs" color="coolGray.800" ellipsizeMode='tail' numberOfLines={1} style={{width:250}}>
+                  {item.originalLink}
+                </Text>
+              </VStack>
               <Spacer />
-              <Text fontSize="xs" color="coolGray.800" ellipsizeMode='tail' numberOfLines={1} style={{width:250}}>
-                {item.originalLink}
-              </Text>
-            </VStack>
-            <Spacer />
-            <Button colorScheme="blue" onPress={(event) => copyToClipboard(event, item)}>Copy</Button>
-          </HStack>
-        </Box>} keyExtractor={item => item.code} />
+              <Button colorScheme="blue" onPress={(event) => copyToClipboard(event, item)}>Copy</Button>
+            </HStack>
+          </Box>
+        ))}
+      </View>
     </>
   );
 }
