@@ -35,7 +35,7 @@ type ShortUrl = {
 };
 
 interface ShortenedListProps {
-  // displayAlert: Function;
+  displayAlert: Function;
   items: Array<ShortUrl>;
 }
 
@@ -44,7 +44,7 @@ function ShortenedUrlList(props: ShortenedListProps) {
     event.preventDefault();
     await Clipboard.setStringAsync(item.shortUrl);
     console.log('URL Copied to Clipboard: ' + item.shortUrl);
-    // props.displayAlert('info', x'Copied to clipboard!');
+    props.displayAlert('info', 'Copied to clipboard!');
   };
 
   return (
@@ -73,7 +73,11 @@ function ShortenedUrlList(props: ShortenedListProps) {
   );
 }
 
-export default function ShortenerForm() {
+interface ShortenerFormProps {
+  displayAlert: Function;
+}
+
+export default function ShortenerForm(props: ShortenerFormProps) {
   const [state, setState] = useAsyncStorage('short-urls', shortenerState);
   const [formData, setData] = React.useState({});
   const [errors, setErrors] = React.useState({});
@@ -114,7 +118,7 @@ export default function ShortenerForm() {
       // mssage for when URL already exists?
       if (state?.shortUrls.some((shortUrl: ShortUrl) => shortUrl.originalLink === shortUrlRequest.url)) {
         // error message on error
-        // displayAlert('danger', 'URL already exists');
+        props.displayAlert('danger', 'URL already exists');
         return false;
       }
 
@@ -132,13 +136,14 @@ export default function ShortenerForm() {
         // push new short url to data store
         setState({ shortUrls: [...state?.shortUrls, newShortUrl] })
 
-        // clear form field on success
+        // TODO: clear form field on success
         // reset();
+
         // confirmation message on success
-        // displayAlert('success', 'Link created successfully!');
+        props.displayAlert('success', 'Link created successfully!');
       } else {
         // error message on error
-        // displayAlert('danger', 'Some error occured.');
+        props.displayAlert('danger', 'Some error occured.');
       }
     } catch (err) {
       console.log(err);
@@ -164,7 +169,7 @@ export default function ShortenerForm() {
     </Button>
 
     {state?.shortUrls ?
-      <ShortenedUrlList items={state.shortUrls} /> : <Text>None</Text>
+      <ShortenedUrlList items={state.shortUrls} displayAlert={props.displayAlert} /> : <Text>None</Text>
     }
 
   </VStack>;
