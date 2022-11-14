@@ -41,11 +41,11 @@ export default function App() {
 
         <Box px="10">
           <Heading mt="10">
-            Gotta shrink that
+            Gotta shorten that
             <Text color="blue.500"> motherfucking URL!</Text>
           </Heading>
           <Text mt="3" fontWeight="medium">
-            Enter an URL in the field below and press the shorten button to proceed.
+            Enter an URL in the field below and press the button to make the URL shorter.
           </Text>
         </Box>
 

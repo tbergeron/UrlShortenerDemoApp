@@ -4,7 +4,8 @@ import {
   VStack,
   FormControl,
   Input,
-  Text
+  Text,
+  WarningOutlineIcon
 } from "native-base";
 import { useAsyncStorage } from '../../AsyncStorage';
 import { Keyboard } from "react-native";
@@ -123,7 +124,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
           value={formData.url} size="xl" isDisabled={props.isFormDisabled}
           onChangeText={value => setData({ ...formData, url: value })} />
 
-        {'url' in errors ? <FormControl.ErrorMessage mb="2">
+        {'url' in errors ? <FormControl.ErrorMessage mb="2" leftIcon={<WarningOutlineIcon size="xs" />}>
           {errors.url}
         </FormControl.ErrorMessage> : ""}
 
