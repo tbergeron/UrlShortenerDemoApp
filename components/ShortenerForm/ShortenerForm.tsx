@@ -105,9 +105,11 @@ export default function ShortenerForm(props: ShortenerFormProps) {
       } else {
         // error message on error
         props.displayAlert('danger', 'Some error occured.');
+        props.displayLoading(false);
       }
     } catch (err) {
       console.log(err);
+      props.displayLoading(false);
     }
   };
 
