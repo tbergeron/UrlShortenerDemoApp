@@ -5,9 +5,15 @@ import {
   FormControl,
   Input,
   Heading,
-  Text
+  Text,
+  FlatList,
+  Box,
+  HStack,
+  Spacer
 } from "native-base";
 import { useAsyncStorage } from '../../AsyncStorage';
+import * as Clipboard from 'expo-clipboard';
+import { GestureResponderEvent } from "react-native";
 
 // component state
 type ShortenerState = {
@@ -34,53 +40,38 @@ interface ShortenedListProps {
 }
 
 function ShortenedUrlList(props: ShortenedListProps) {
-  return (
-    <>
-      <Heading mt="10">
-        Shortened URLs
-      </Heading>
-      {props.items.map((item: ShortUrl) =>
-        <ShortenedUrlListItem key={item.code} item={item} />
-      )}
-    </>
-  );
-}
-
-interface ShortenedListItemProps {
-  // displayAlert: Function;
-  item: ShortUrl;
-}
-
-function ShortenedUrlListItem(props: ShortenedListItemProps) {
-  const copyToClipboard = (event: React.MouseEvent<HTMLButtonElement>, item: ShortUrl) => {
+  const copyToClipboard = async (event: GestureResponderEvent, item: ShortUrl) => {
     event.preventDefault();
-    navigator.clipboard.writeText(item.shortUrl);
-    // props.displayAlert('info', 'Copied to clipboard!');
+    await Clipboard.setStringAsync(item.shortUrl);
+    console.log('URL Copied to Clipboard: ' + item.shortUrl);
+    // props.displayAlert('info', x'Copied to clipboard!');
   };
 
   return (
-    <Text>
-      {props.item.originalLink} - {props.item.shortUrl}
-    </Text>
-    // <Row className="mt-2 mb-3 pt-3 p-2 bg-white rounded">
-    //   <Col md={5} className="original-link text-truncate">
-    //     <a href={props.item.originalLink} target="_blank" rel="noreferrer">
-    //       {props.item.originalLink}
-    //     </a>
-    //   </Col>
-    //   <Col md={5} className="shortened-url text-end">
-    //     <a href={props.item.shortUrl} target="_blank" rel="noreferrer">
-    //       {props.item.shortUrl}
-    //     </a>
-    //   </Col>
-    //   <Col md={2} className="copy text-end">
-    //     <Button variant="primary" onClick={(event) => copyToClipboard(event, props.item)}>Copy</Button>
-    //   </Col>
-    // </Row>
+    <>
+      <Heading mt="10" mb="5">
+        Shortened URLs
+      </Heading>
+
+      <FlatList data={props.items} renderItem={({ item }) =>
+        <Box pl={["0", "4"]} pr={["0", "5"]} py="2">
+          <HStack space={[2, 3]} justifyContent="space-between">
+            <VStack>
+              <Text color="coolGray.600">
+                {item.shortUrl}
+              </Text>
+              <Spacer />
+              <Text fontSize="xs" color="coolGray.800">
+                {item.originalLink}
+              </Text>
+            </VStack>
+            <Spacer />
+            <Button colorScheme="blue" onPress={(event) => copyToClipboard(event, item)}>Copy</Button>
+          </HStack>
+        </Box>} keyExtractor={item => item.code} />
+    </>
   );
 }
-
-{/* <ShortenedUrlList items={state.shortUrls} displayAlert={displayAlert} /> */}
 
 export default function ShortenerForm() {
   const [state, setState] = useAsyncStorage('short-urls', shortenerState);
@@ -154,7 +145,7 @@ export default function ShortenerForm() {
     }
   };
 
-  return <VStack mx="10" mt="10">
+  return <VStack mx="10" mt="5">
     <FormControl isRequired isInvalid={'url' in errors}>
 
       <FormControl.Label _text={{ bold: true }}>URL</FormControl.Label>
@@ -168,7 +159,7 @@ export default function ShortenerForm() {
 
     </FormControl>
 
-    <Button onPress={onSubmit} mt="5" colorScheme="blue">
+    <Button onPress={onSubmit} colorScheme="blue">
       Make it short!
     </Button>
 
