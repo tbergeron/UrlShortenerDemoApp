@@ -31,6 +31,8 @@ type ShortUrl = {
 
 interface ShortenerFormProps {
   displayAlert: Function;
+  displayLoading: Function;
+  isFormDisabled: boolean;
 }
 export default function ShortenerForm(props: ShortenerFormProps) {
   const [state, setState] = useAsyncStorage('short-urls', shortenerState);
@@ -78,7 +80,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
         setData({ url: ''})
         return false;
       }
-
+      props.displayLoading(true);
       let res = await fetch(buildUrl('shorten?url=' + shortUrlRequest.url));
       let resJson = await res.json();
       console.log('response', resJson);
@@ -95,6 +97,8 @@ export default function ShortenerForm(props: ShortenerFormProps) {
 
         // clear form field on success
         setData({ url: ''})
+
+        props.displayLoading(false);
 
         // confirmation message on success
         props.displayAlert('success', 'Link created successfully!');
@@ -114,7 +118,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
         <FormControl.Label _text={{ bold: true }}>URL</FormControl.Label>
 
         <Input placeholder="https://..."
-          value={formData.url} size="xl"
+          value={formData.url} size="xl" isDisabled={props.isFormDisabled}
           onChangeText={value => setData({ ...formData, url: value })} />
 
         {'url' in errors ? <FormControl.ErrorMessage mb="2">
@@ -123,12 +127,13 @@ export default function ShortenerForm(props: ShortenerFormProps) {
 
       </FormControl>
 
-      <Button onPress={onSubmit} colorScheme="blue">
+      <Button onPress={onSubmit} colorScheme="blue" isDisabled={props.isFormDisabled}>
         Make it short!
       </Button>
 
       {state?.shortUrls ?
-        <ShortenedUrlList items={[...state.shortUrls].reverse()} displayAlert={props.displayAlert} /> : <Text>None</Text>
+        <ShortenedUrlList items={[...state.shortUrls].reverse()}
+          displayAlert={props.displayAlert} /> : <Text>None</Text>
       }
 
     </VStack>

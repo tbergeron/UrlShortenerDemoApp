@@ -26,9 +26,6 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
 
   // TODO: swipe to delete
   // see: https://docs.nativebase.io/building-swipe-list
-  // TODO: fix scroll of the list (bottom is not accessible)
-  // TODO: add loading indicator
-  // see: https://docs.nativebase.io/spinner
 
   return (
     <>
@@ -36,7 +33,7 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
         Shortened URLs
       </Heading>
 
-      <FlatList data={props.items} renderItem={({ item }) =>
+      <FlatList mb="10" data={props.items} renderItem={({ item }) =>
         <Box pl={["0", "4"]} pr={["0", "5"]} py="2">
           <HStack space={[2, 3]} justifyContent="space-between">
             <VStack>
