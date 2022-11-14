@@ -117,7 +117,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
           value={formData.url} size="xl"
           onChangeText={value => setData({ ...formData, url: value })} />
 
-        {'url' in errors ? <FormControl.ErrorMessage>
+        {'url' in errors ? <FormControl.ErrorMessage mb="2">
           {errors.url}
         </FormControl.ErrorMessage> : ""}
 

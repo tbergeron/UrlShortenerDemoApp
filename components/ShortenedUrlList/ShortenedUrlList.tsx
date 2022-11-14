@@ -24,6 +24,12 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
     props.displayAlert('info', 'Copied to clipboard!');
   };
 
+  // TODO: swipe to delete
+  // see: https://docs.nativebase.io/building-swipe-list
+  // TODO: fix scroll of the list (bottom is not accessible)
+  // TODO: add loading indicator
+  // see: https://docs.nativebase.io/spinner
+
   return (
     <>
       <Heading mt="10" mb="5">
