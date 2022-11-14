@@ -4,16 +4,11 @@ import {
   VStack,
   FormControl,
   Input,
-  Heading,
-  Text,
-  FlatList,
-  Box,
-  HStack,
-  Spacer
+  Text
 } from "native-base";
-import * as Clipboard from 'expo-clipboard';
 import { useAsyncStorage } from '../../AsyncStorage';
-import { GestureResponderEvent } from "react-native";
+import { Keyboard } from "react-native";
+import ShortenedUrlList from "../ShortenedUrlList/ShortenedUrlList";
 
 // component state
 type ShortenerState = {
@@ -32,43 +27,6 @@ type ShortUrl = {
   originalLink: string;
   shortUrl    : string;
   code        : string;
-}
-
-interface ShortenedListProps {
-  displayAlert: Function;
-  items       : Array<ShortUrl>;
-}
-function ShortenedUrlList(props: ShortenedListProps) {
-  const copyToClipboard = async (event: GestureResponderEvent, item: ShortUrl) => {
-    event.preventDefault();
-    await Clipboard.setStringAsync(item.shortUrl);
-    props.displayAlert('info', 'Copied to clipboard!');
-  };
-
-  return (
-    <>
-      <Heading mt="10" mb="5">
-        Shortened URLs
-      </Heading>
-
-      <FlatList data={props.items.reverse()} renderItem={({ item }) =>
-        <Box pl={["0", "4"]} pr={["0", "5"]} py="2">
-          <HStack space={[2, 3]} justifyContent="space-between">
-            <VStack>
-              <Text color="coolGray.600">
-                {item.shortUrl}
-              </Text>
-              <Spacer />
-              <Text fontSize="xs" color="coolGray.800">
-                {item.originalLink}
-              </Text>
-            </VStack>
-            <Spacer />
-            <Button colorScheme="blue" onPress={(event) => copyToClipboard(event, item)}>Copy</Button>
-          </HStack>
-        </Box>} keyExtractor={item => item.code} />
-    </>
-  );
 }
 
 interface ShortenerFormProps {
@@ -103,6 +61,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
   const onSubmit = () => {
     if (validate()) {
       createShortenedUrl({ url: formData.url} );
+      Keyboard.dismiss();
     }
   };
 
@@ -116,6 +75,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
       if (state?.shortUrls.some((shortUrl: ShortUrl) => shortUrl.originalLink === shortUrlRequest.url)) {
         // error message on error
         props.displayAlert('danger', 'URL already exists');
+        setData({ url: ''})
         return false;
       }
 
@@ -154,7 +114,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
         <FormControl.Label _text={{ bold: true }}>URL</FormControl.Label>
 
         <Input placeholder="https://..."
-          value={formData.url}
+          value={formData.url} size="xl"
           onChangeText={value => setData({ ...formData, url: value })} />
 
         {'url' in errors ? <FormControl.ErrorMessage>
@@ -168,7 +128,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
       </Button>
 
       {state?.shortUrls ?
-        <ShortenedUrlList items={state.shortUrls} displayAlert={props.displayAlert} /> : <Text>None</Text>
+        <ShortenedUrlList items={[...state.shortUrls].reverse()} displayAlert={props.displayAlert} /> : <Text>None</Text>
       }
 
     </VStack>
