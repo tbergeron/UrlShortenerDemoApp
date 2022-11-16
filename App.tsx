@@ -3,8 +3,7 @@ import {
   Text,
   Heading,
   NativeBaseProvider,
-  Box,
-  ScrollView
+  Box
 } from "native-base";
 import AppBar from "./components/AppBar/AppBar";
 import CollapsibleAlert from "./components/CollapsibleAlert/CollapsibleAlert";
@@ -37,23 +36,20 @@ export default function App() {
 
       <CollapsibleAlert isShowingAlert={isShowingAlert} alertType={alertType} alertMessage={alertMessage} />
 
-      <ScrollView>
+      <Box px="10">
+        <Heading mt="10">
+          Gotta shorten that
+          <Text color="blue.500"> motherfucking URL!</Text>
+        </Heading>
+        <Text mt="3" fontWeight="medium">
+          Enter an URL in the field below and press the button to make the URL shorter.
+        </Text>
+      </Box>
 
-        <Box px="10">
-          <Heading mt="10">
-            Gotta shorten that
-            <Text color="blue.500"> motherfucking URL!</Text>
-          </Heading>
-          <Text mt="3" fontWeight="medium">
-            Enter an URL in the field below and press the button to make the URL shorter.
-          </Text>
-        </Box>
+      <LoadingIndicator isShowingLoading={isShowingLoading} />
 
-        <LoadingIndicator isShowingLoading={isShowingLoading} />
+      <ShortenerForm displayAlert={displayAlert} displayLoading={displayLoading} isFormDisabled={isFormDisabled} />
 
-        <ShortenerForm displayAlert={displayAlert} displayLoading={displayLoading} isFormDisabled={isFormDisabled} />
-
-      </ScrollView>
     </NativeBaseProvider>
   );
 }

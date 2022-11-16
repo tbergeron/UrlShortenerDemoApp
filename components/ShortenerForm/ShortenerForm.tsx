@@ -5,7 +5,8 @@ import {
   FormControl,
   Input,
   Text,
-  WarningOutlineIcon
+  WarningOutlineIcon,
+  Heading
 } from "native-base";
 import { useAsyncStorage } from '../../AsyncStorage';
 import { Keyboard } from "react-native";
@@ -24,7 +25,7 @@ type ShortUrlRequest = {
   url: string;
 }
 // short url type
-type ShortUrl = {
+export type ShortUrl = {
   originalLink: string;
   shortUrl    : string;
   code        : string;
@@ -114,31 +115,43 @@ export default function ShortenerForm(props: ShortenerFormProps) {
     }
   };
 
+  const removeItem = (shortUrl: ShortUrl) => {
+    console.log('SHORTENERFORM -> REMOVING ITEM!')
+    // const newList = state?.shortUrls.filter((item) => item.code !== shortUrl.code);
+    // setState({ shortUrls: newList });
+  };
+
   return (
-    <VStack mx="10" mt="5">
-      <FormControl isRequired isInvalid={'url' in errors}>
+    <>
+      <VStack mx="10" mt="5">
+        <FormControl isRequired isInvalid={'url' in errors}>
 
-        <FormControl.Label _text={{ bold: true }}>URL</FormControl.Label>
+          <FormControl.Label _text={{ bold: true }}>URL</FormControl.Label>
 
-        <Input placeholder="https://..."
-          value={formData.url} size="xl" isDisabled={props.isFormDisabled}
-          onChangeText={value => setData({ ...formData, url: value })} />
+          <Input placeholder="https://..."
+            value={formData.url} size="xl" isDisabled={props.isFormDisabled}
+            onChangeText={value => setData({ ...formData, url: value })} />
 
-        {'url' in errors ? <FormControl.ErrorMessage mb="2" leftIcon={<WarningOutlineIcon size="xs" />}>
-          {errors.url}
-        </FormControl.ErrorMessage> : ""}
+          {'url' in errors ? <FormControl.ErrorMessage mb="2" leftIcon={<WarningOutlineIcon size="xs" />}>
+            {errors.url}
+          </FormControl.ErrorMessage> : ""}
 
-      </FormControl>
+        </FormControl>
 
-      <Button onPress={onSubmit} colorScheme="blue" isDisabled={props.isFormDisabled}>
-        Make it short!
-      </Button>
+        <Button onPress={onSubmit} colorScheme="blue" isDisabled={props.isFormDisabled}>
+          Make it short!
+        </Button>
+
+        <Heading mt="10" mb="5">
+          Shortened URLs
+        </Heading>
+
+      </VStack>
 
       {state?.shortUrls ?
         <ShortenedUrlList items={[...state.shortUrls].reverse()}
-          displayAlert={props.displayAlert} /> : <Text>None</Text>
+          displayAlert={props.displayAlert} removeItem={removeItem} /> : <Text>None</Text>
       }
-
-    </VStack>
+    </>
   );
 }
