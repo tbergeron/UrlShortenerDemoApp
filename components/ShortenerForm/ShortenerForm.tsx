@@ -138,7 +138,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
 
         </FormControl>
 
-        <Button onPress={onSubmit} colorScheme="blue" isDisabled={props.isFormDisabled}>
+        <Button colorScheme="blue" mt="2" onPress={onSubmit} isDisabled={props.isFormDisabled}>
           Make it short!
         </Button>
 

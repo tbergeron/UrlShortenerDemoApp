@@ -87,7 +87,7 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
         renderHiddenItem={renderHiddenItem}
         rightOpenValue={-70}
         previewRowKey={'0'}
-        previewOpenValue={-40}
+        previewOpenValue={-70}
         previewOpenDelay={3000}
         keyExtractor={(item, index) => index.toString()}
       />
