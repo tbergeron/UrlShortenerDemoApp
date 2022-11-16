@@ -116,9 +116,9 @@ export default function ShortenerForm(props: ShortenerFormProps) {
   };
 
   const removeItem = (shortUrl: ShortUrl) => {
-    console.log('SHORTENERFORM -> REMOVING ITEM!')
-    // const newList = state?.shortUrls.filter((item) => item.code !== shortUrl.code);
-    // setState({ shortUrls: newList });
+    console.log('Removing item:', shortUrl)
+    const newList = state?.shortUrls.filter((item) => item.code !== shortUrl.code);
+    setState({ shortUrls: newList });
   };
 
   return (

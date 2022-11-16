@@ -1,20 +1,14 @@
-import React, { useState, useRef } from 'react';
-import {
-    Animated,
-    Dimensions,
-    StyleSheet,
-    TouchableHighlight
-} from 'react-native';
+import { Dimensions } from 'react-native';
 import {
   Button,
   VStack,
-  Heading,
   Text,
   Box,
   HStack,
   Spacer,
   Link,
-  View
+  View,
+  Pressable
 } from "native-base";
 import * as Clipboard from 'expo-clipboard';
 import { GestureResponderEvent } from "react-native";
@@ -29,68 +23,34 @@ interface ShortenedUrlListProps {
 
 export default function ShortenedUrlList(props: ShortenedUrlListProps) {
 
-  const rowTranslateAnimatedValues = {};
-
-  props.items
-    .forEach((_, i) => {
-      rowTranslateAnimatedValues[`${i}`] = new Animated.Value(1);
-    });
-
   const copyToClipboard = async (event: GestureResponderEvent, item: ShortUrl) => {
     event.preventDefault();
     await Clipboard.setStringAsync(item.shortUrl);
     props.displayAlert('info', 'Copied to clipboard!');
   };
 
-  const animationIsRunning = useRef(false);
-
-  const onSwipeValueChange = swipeData => {
-    const { key, value } = swipeData;
-    if (value < -Dimensions.get('window').width && !animationIsRunning.current) {
-      animationIsRunning.current = true;
-
-      // TODO: this should animate the red cell back to its initial position?
-
-      Animated.timing(rowTranslateAnimatedValues[`${key}`], {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start(() => {
-
-        // TODO: this gets fired multiple times
-        // is it because of the list's width?
-
-        console.log('Telling parent component to delete:', key, props.items[key]);
-        props.removeItem(props.items[key]);
-        animationIsRunning.current = false;
-      });
+  const closeRow = (rowMap, rowKey) => {
+    if (rowMap[rowKey]) {
+      rowMap[rowKey].closeRow();
     }
   };
 
-  // TODO: delete cell remains opened after deletetion
+  const deleteRow = (rowMap, rowKey) => {
+    closeRow(rowMap, rowKey);
+    props.removeItem(props.items[rowKey]);
+  };
+
   const renderItem = data => (
-    <Animated.View
-
-      // TODO: this animates the cell upward when it disappears
-
-      // style={{
-      //   height: rowTranslateAnimatedValues[data.item.key].interpolate({
-      //     inputRange: [0, 1],
-      //     outputRange: [0, 50],
-      //   }),
-      // }}
-    >
-      <TouchableHighlight style={styles.rowFront}>
+    <Pressable bg="white">
         <View>
-
-          <Box pl={["0", "4"]} pr={["0", "5"]} py="2" key={data.item.code}>
+          <Box px="10" py="2" key={data.item.code}>
             <HStack space={[2, 3]} justifyContent="space-between">
               <VStack>
                 <Text color="coolGray.600">
                   <Link href={data.item.shortUrl}>{data.item.shortUrl}</Link>
                 </Text>
                 <Spacer />
-                <Text fontSize="xs" color="coolGray.800" ellipsizeMode='tail' numberOfLines={1} width="270px">
+                <Text fontSize="xs" color="coolGray.800" ellipsizeMode='tail' numberOfLines={1} width={Dimensions.get('window').width-160}>
                   {data.item.originalLink}
                 </Text>
               </VStack>
@@ -98,70 +58,39 @@ export default function ShortenedUrlList(props: ShortenedUrlListProps) {
               <Button colorScheme="blue" onPress={(event) => copyToClipboard(event, data.item)}>Copy</Button>
             </HStack>
           </Box>
-
         </View>
-      </TouchableHighlight>
-    </Animated.View>
+    </Pressable>
   );
 
-  const renderHiddenItem = () => (
-    <View style={styles.rowBack}>
-      <View style={[styles.backRightBtn, styles.backRightBtnRight]}>
-        <Text style={styles.backTextWhite}>Delete</Text>
-      </View>
-    </View>
+  const renderHiddenItem = (data, rowMap) => (
+    <HStack flex="1" pl="2">
+      <Pressable w="70" ml="auto" bg="white">
+      </Pressable>
+      <Pressable w="70" bg="red.500" justifyContent="center"
+        onPress={() => deleteRow(rowMap, data.index)} _pressed={{ opacity: 0.5 }}
+      >
+        <VStack alignItems="center" space={2}>
+          <Text color="white" fontSize="xs" fontWeight="medium">
+            Delete
+          </Text>
+        </VStack>
+      </Pressable>
+    </HStack>
   );
 
   return (
     <View mb="10">
-
       <SwipeListView
-        disableRightSwipe
         height={Dimensions.get('window').height-520}
         data={props.items}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
-        rightOpenValue={-Dimensions.get('window').width}
-        onSwipeValueChange={onSwipeValueChange}
+        rightOpenValue={-70}
         previewRowKey={'0'}
         previewOpenValue={-40}
         previewOpenDelay={3000}
-        useNativeDriver={false}
         keyExtractor={(item, index) => index.toString()}
       />
-
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  backTextWhite: {
-    color: '#FFF',
-  },
-  rowFront: {
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    height: 50,
-  },
-  rowBack: {
-    alignItems: 'center',
-    backgroundColor: 'red',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 15,
-  },
-  backRightBtn: {
-    alignItems: 'center',
-    bottom: 0,
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 0,
-    width: 75,
-  },
-  backRightBtnRight: {
-    backgroundColor: 'red',
-    right: 0,
-  },
-});
