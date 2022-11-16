@@ -119,6 +119,7 @@ export default function ShortenerForm(props: ShortenerFormProps) {
     console.log('Removing item:', shortUrl)
     const newList = state?.shortUrls.filter((item) => item.code !== shortUrl.code);
     setState({ shortUrls: newList });
+    props.displayAlert('danger', shortUrl.shortUrl + ' has been removed.');
   };
 
   return (
